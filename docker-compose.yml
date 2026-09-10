@@ -6,10 +6,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
       POSTGRES_DB: librarydb
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+    network_mode: host
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d librarydb"]
       interval: 10s
@@ -19,12 +16,13 @@ services:
   app:
     build: .
     container_name: library-api
-    ports:
-      - "8080:8080"
+    network_mode: host
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/librarydb
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/librarydb
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: password
+      JWT_SECRET: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7e4a4c29f8be5bd0c2a8f52d0
+      JWT_EXPIRATION: 86400000
     depends_on:
       postgres:
         condition: service_healthy
