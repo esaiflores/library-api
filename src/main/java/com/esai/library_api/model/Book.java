@@ -25,4 +25,5 @@ public class Book {
     private Integer availableCopies;
     private String notes;
     private LocalDate addedDate;
+    private String coverUrl;
 }
