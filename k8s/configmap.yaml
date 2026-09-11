@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: library-config
+  namespace: library-app
+data:
+  SPRING_JPA_SHOW_SQL: "false"
+  SERVER_PORT: "8080"

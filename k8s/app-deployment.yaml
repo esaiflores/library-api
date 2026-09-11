@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: library-api
+  namespace: library-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: library-api
+  template:
+    metadata:
+      labels:
+        app: library-api
+    spec:
+      containers:
+        - name: library-api
+          image: library-api:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/librarydb
+            - name: SPRING_DATASOURCE_USERNAME
+              value: admin
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: password
+            - name: JWT_SECRET
+              value: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7e4a4c29f8be5bd0c2a8f52d0
+            - name: JWT_EXPIRATION
+              value: "86400000"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: library-api
+  namespace: library-app
+spec:
+  selector:
+    app: library-api
+  ports:
+    - port: 80
+      targetPort: 8080
+  type: LoadBalancer
