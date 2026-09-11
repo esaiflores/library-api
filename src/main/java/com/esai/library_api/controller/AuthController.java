@@ -21,6 +21,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            return ResponseEntity.status(400).body(Map.of("error", "Username already taken"));
+        }
+        if (user.getEmail() != null && userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return ResponseEntity.status(400).body(Map.of("error", "Email already registered"));
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("TEACHER");
         userRepository.save(user);
