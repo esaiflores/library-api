@@ -37,8 +37,11 @@ public class EmailService {
             request.setMethod(Method.POST);
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
-            sg.api(request);
+            Response response = sg.api(request);
+            System.out.println("SendGrid status: " + response.getStatusCode());
+            System.out.println("SendGrid body: " + response.getBody());
         } catch (IOException e) {
+            System.out.println("SendGrid error: " + e.getMessage());
             throw new RuntimeException("Failed to send email", e);
         }
     }
