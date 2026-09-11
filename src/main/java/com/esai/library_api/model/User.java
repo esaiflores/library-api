@@ -3,6 +3,8 @@ package com.esai.library_api.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Entity
 @Table(name = "users")
@@ -22,4 +24,7 @@ public class User {
     private String email;
 
     private String role;
+
+    private String resetToken;
+    private LocalDateTime resetTokenExpiry;
 }

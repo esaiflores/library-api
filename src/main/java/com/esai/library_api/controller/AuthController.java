@@ -3,6 +3,7 @@ package com.esai.library_api.controller;
 import com.esai.library_api.model.User;
 import com.esai.library_api.repository.UserRepository;
 import com.esai.library_api.service.JwtService;
+import com.esai.library_api.service.PasswordResetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +19,7 @@ public class AuthController {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordResetService passwordResetService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
@@ -44,5 +46,23 @@ public class AuthController {
 
         String token = jwtService.generateToken(existing.getUsername());
         return ResponseEntity.ok(Map.of("token", token));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
+        passwordResetService.initiatePasswordReset(body.get("email"));
+        return ResponseEntity.ok(Map.of(
+                "message", "If that email exists you will receive a reset link shortly"
+        ));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
+        try {
+            passwordResetService.resetPassword(body.get("token"), body.get("password"));
+            return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
+        }
     }
 }
