@@ -75,7 +75,8 @@ public class AuthController {
         return ResponseEntity.ok(Map.of(
                 "username", user.getUsername(),
                 "email", user.getEmail() != null ? user.getEmail() : "",
-                "role", user.getRole()
+                "displayName", user.getDisplayName() != null ? user.getDisplayName() : "",
+                "loanDurationDays", user.getLoanDurationDays() != null ? user.getLoanDurationDays() : 14
         ));
     }
 
