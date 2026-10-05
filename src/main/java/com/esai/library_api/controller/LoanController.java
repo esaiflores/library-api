@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api/loans")
@@ -33,8 +34,10 @@ public class LoanController {
     }
 
     @PostMapping
-    public ResponseEntity<Loan> createLoan(@RequestBody Loan loan) {
-        return ResponseEntity.ok(loanService.createLoan(loan));
+    public ResponseEntity<Loan> createLoan(
+            @RequestBody Loan loan,
+            Authentication authentication) {
+        return ResponseEntity.ok(loanService.createLoan(loan, authentication.getName()));
     }
 
     @PutMapping("/{id}/return")

@@ -2,8 +2,10 @@ package com.esai.library_api.service;
 
 import com.esai.library_api.model.Book;
 import com.esai.library_api.model.Loan;
+import com.esai.library_api.model.User;
 import com.esai.library_api.repository.BookRepository;
 import com.esai.library_api.repository.LoanRepository;
+import com.esai.library_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ public class LoanService {
 
     private final LoanRepository loanRepository;
     private final BookRepository bookRepository;
+    private final UserRepository userRepository;
 
     public List<Loan> getAllLoans() {
         return loanRepository.findAll();
@@ -26,7 +29,7 @@ public class LoanService {
         return loanRepository.findById(id);
     }
 
-    public Loan createLoan(Loan loan) {
+    public Loan createLoan(Loan loan, String username) {
         Book book = bookRepository.findById(loan.getBookId())
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
@@ -34,11 +37,16 @@ public class LoanService {
             throw new RuntimeException("No available copies");
         }
 
+        User teacher = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        int loanDays = teacher.getLoanDurationDays() != null ? teacher.getLoanDurationDays() : 14;
+
         book.setAvailableCopies(book.getAvailableCopies() - 1);
         bookRepository.save(book);
 
         loan.setLentDate(LocalDate.now());
-        loan.setDueDate(LocalDate.now().plusDays(14));
+        loan.setDueDate(LocalDate.now().plusDays(loanDays));
         return loanRepository.save(loan);
     }
 

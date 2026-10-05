@@ -27,4 +27,8 @@ public class User {
 
     private String resetToken;
     private LocalDateTime resetTokenExpiry;
+
+    private String displayName;
+
+    private Integer loanDurationDays;
 }
